@@ -1,0 +1,70 @@
+- name: Install exporters
+  hosts: nginx
+  become: yes
+
+  tasks:
+ 
+  - name: update apt
+    apt:
+      update_cache: yes
+
+  - name: install docker.io
+    apt:  
+      name: docker.io
+      state: latest
+
+  - name: install docker-compose
+    apt:  
+      name: docker-compose
+      state: latest
+
+  - name: move exporters
+    synchronize:
+      src: monitor/exporters/
+      dest: /home/golovin/exporters/
+      recursive: yes
+
+  - name: run Docker Compose to start exporters
+    command:
+        cmd: docker-compose up -d
+        chdir: /home/ilua1/exporters/
+
+  - name: download prometheus-nginxlog-exporter
+    get_url:
+         url: https://github.com/martin-helmich/prometheus-nginxlog-exporter/releases/download/v1.11.0/prometheus-nginxlog-exporter_1.11.0_linux_amd64.deb
+         dest: /root/
+         mode: '0755'
+
+  - name: install prometheus-nginxlog-exporter
+    shell: dpkg -i /root/prometheus-nginxlog-exporter_1.11.0_linux_amd64.deb
+
+  - name: Сopy prometheus-nginxlog-exporter confs
+    copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: '0644'
+    with_items:
+        - { src: './monitor/exporters/prometheus-nginxlog-exporter.hcl', dest: '/etc/prometheus-nginxlog-exporter.hcl' }
+
+  - name: Change permissions for access.log
+    file:
+        path: /var/log/nginx/access.log
+        mode: "0644"
+
+  - name: Change permissions for error.log
+    file:
+        path: /var/log/nginx/error.log
+        mode: "0644"
+
+  - name: daemon-reload
+    command: systemctl daemon-reload
+
+  - name: enable nginxlog_exporter
+    command: systemctl enable prometheus-nginxlog-exporter
+
+  - name: restart nginxlog_exporter
+    command: systemctl restart prometheus-nginxlog-exporter
+
+

@@ -1,0 +1,37 @@
+- name: Install Kibana
+  hosts: kibana
+  become: yes
+
+  tasks:
+  
+  - name: download Kibana
+    get_url:
+      url: 'https://mirror.yandex.ru/mirrors/elastic/7/pool/main/k/kibana/kibana-7.17.9-amd64.deb'
+      dest: '/root/kibana-7.17.9-amd64.deb'
+
+  - name: install Kibana
+    apt:
+      deb: '/root/kibana-7.17.9-amd64.deb'
+      
+  - name: update 
+    apt:
+      update_cache: yes
+
+  - name: daemon reload
+    systemd:
+      daemon_reload: true
+      name: kibana.service
+      state: started
+
+  - name: move conf file
+    copy:
+      src: ./kibana/config.yml
+      dest: /etc/kibana/kibana.yml
+      owner: root
+      group: kibana
+
+  - name: restart Kibana
+    systemd:
+      name: kibana.service
+      state: restarted
+

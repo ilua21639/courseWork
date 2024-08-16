@@ -1,0 +1,37 @@
+- name: Install Filebeat
+  hosts: nginx
+  become: yes
+
+  tasks:
+  
+  - name: download filebeat
+    get_url:
+      url: 'https://mirror.yandex.ru/mirrors/elastic/7/pool/main/f/filebeat/filebeat-7.17.9-amd64.deb'
+      dest: '/root/filebeat-7.17.9-amd64.deb'
+
+  - name: install filebeat
+    apt:
+      deb: '/root/filebeat-7.17.9-amd64.deb'
+      
+  - name: update 
+    apt:
+      update_cache: yes    
+
+  - name: daemon reload
+    systemd:
+      daemon_reload: true
+      name: filebeat.service
+      state: started
+
+  - name: move conf file
+    copy:
+      src: ./filebeat/config.yml
+      dest: /etc/filebeat/filebeat.yml
+      owner: root
+      group: root
+
+  - name: restart filebeat
+    systemd:
+      name: filebeat.service
+      state: restarted
+

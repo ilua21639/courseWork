@@ -1,0 +1,47 @@
+- name: Install Nginx and Upload Site
+  hosts: nginx
+  become: yes
+
+  tasks:
+ 
+  - name: Update apt
+    apt:
+      update_cache: yes
+
+  - name: Install nginx
+    apt:  
+      name: nginx 
+      state: latest
+
+  - name: Install zip
+    apt:
+      name: zip
+      state: latest
+
+  - name: Rm index.nginx-debian.html
+    file:
+      path: /var/www/html/index.nginx-debian.html
+      state: absent
+
+  - name: Move site
+    unarchive:
+      src: ./site/html5up-multiverse.zip
+      dest: /var/www/html/
+      copy: yes
+
+  - name: Сopy confs
+    copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: '0644'
+    with_items:
+        - { src: './site/nginx.conf', dest: '/etc/nginx/nginx.conf' }
+        - { src: './site/myapp.conf', dest: '/etc/nginx/conf.d/myapp.conf' }
+
+  - name: Restart nginx
+    service:
+        name: nginx
+        state: restarted
+

@@ -1,0 +1,20 @@
+[nginx]
+nginx-1 ansible_host=nginx-1.ru-central1.internal
+nginx-2 ansible_host=nginx-2.ru-central1.internal
+
+[prometheus]
+prometheus-server ansible_host=prometheus.ru-central1.internal
+
+[grafana]
+grafana-server ansible_host=grafana.ru-central1.internal
+
+[elastic]
+elastic-server ansible_host=elasticsearch.ru-central1.internal
+
+[kibana]
+kibana-server ansible_host=kibana.ru-central1.internal
+
+[all:vars]
+ansible_ssh_user=ilua1
+ansible_ssh_private_key_file=~/.ssh/id
+

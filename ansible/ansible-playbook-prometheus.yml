@@ -1,0 +1,31 @@
+- name: Install prometheus
+  hosts: prometheus
+  become: yes
+
+  tasks:
+ 
+  - name: update apt
+    apt:
+      update_cache: yes
+
+  - name: install docker.io
+    apt:  
+      name: docker.io
+      state: latest
+
+  - name: install docker-compose
+    apt:  
+      name: docker-compose
+      state: latest
+
+  - name: move prometheus
+    synchronize:
+      src: monitor/prometheus/
+      dest: /home/ilua1/prometheus/
+      recursive: yes
+
+  - name: run Docker Compose to start Prometheus
+    command:
+        cmd: docker-compose up -d
+        chdir: /home/ilua1/prometheus/
+

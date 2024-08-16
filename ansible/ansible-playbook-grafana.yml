@@ -1,0 +1,31 @@
+- name: Install grafana
+  hosts: grafana
+  become: yes
+
+  tasks:
+ 
+  - name: update apt
+    apt:
+      update_cache: yes
+
+  - name: install docker.io
+    apt:  
+      name: docker.io
+      state: latest
+
+  - name: install docker-compose
+    apt:  
+      name: docker-compose
+      state: latest
+
+  - name: move grafana
+    synchronize:
+      src: monitor/grafana/
+      dest: /home/ilua1/grafana/
+      recursive: yes
+
+  - name: run Docker Compose to start Grafana
+    command:
+        cmd: docker-compose up -d
+        chdir: /home/ilua1/grafana/
+

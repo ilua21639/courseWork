@@ -1,0 +1,37 @@
+- name: Install elasticsearch
+  hosts: elastic
+  become: yes
+
+  tasks:
+  
+  - name: download elasticsearch
+    get_url:
+      url: 'https://mirror.yandex.ru/mirrors/elastic/7/pool/main/e/elasticsearch/elasticsearch-7.17.9-amd64.deb'
+      dest: '/root/elasticsearch-7.17.9-amd64.deb'
+      
+  - name: install elastic
+    apt:
+      deb: '/root/elasticsearch-7.17.9-amd64.deb'
+      
+  - name: update 
+    apt:
+      update_cache: yes
+
+  - name: daemon reload
+    systemd:
+      daemon_reload: true
+      name: elasticsearch.service
+      state: started
+
+  - name: move conf file
+    copy:
+      src: ./elastic/config.yml
+      dest: /etc/elasticsearch/elasticsearch.yml
+      owner: root
+      group: elasticsearch
+      
+  - name: restart elastic
+    systemd:
+      name: elasticsearch.service
+      state: restarted
+
