@@ -1,0 +1,10 @@
+version: '3.3'
+
+services:
+
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    network_mode: "host"
+
+
