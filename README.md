@@ -53,4 +53,5 @@ ilua@Ilua-Default-String@:~/terraform-cloud$bash move.sh
 Конфигурируем ansible и последовательно запускаем плейбуки 
 
 ilua1@bastion:~$ cd ansible/
+
 ilua1@bastion:~$ bash start.sh
