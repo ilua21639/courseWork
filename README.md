@@ -54,4 +54,4 @@ ilua@Ilua-Default-String@:~/terraform-cloud$bash move.sh
 
 ilua1@bastion:~$ cd ansible/
 
-ilua1@bastion:~$ bash start.sh
+ilua1@bastion:~/ ansible$ bash start.sh
